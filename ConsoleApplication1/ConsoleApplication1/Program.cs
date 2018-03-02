@@ -161,16 +161,42 @@ namespace ConsoleApplication1
                 OleDbDataAdapter da = new OleDbDataAdapter(cmd);
                 Console.WriteLine("SQL Query passed.");
 
-                // Test sql update
-                string query = "update [SIDEWALK & GUTTER REPAIR LIST] set [REPORTED BY]=@rb1";
-                OleDbCommand cmdUpdate = new OleDbCommand(query, connection);
-                //cmdUpdate.Parameters.Clear();
+
+                string query = "";
+                OleDbCommand cmdUpdate;
+                // Fix [REPORTED BY]
+
+                query = "update [SIDEWALK & GUTTER REPAIR LIST] set [REPORTED BY]=@rb1 where [REPORTED BY]=@rb2 or [REPORTED BY]=@rb3 or [REPORTED BY]=@rb4";
+                query += " or [REPORTED BY]=@rb5 or [REPORTED BY]=@rb6";
+                cmdUpdate = new OleDbCommand(query, connection);
+                cmdUpdate.Parameters.Clear();
                 cmdUpdate.CommandType = CommandType.Text;
-                cmdUpdate.Parameters.AddWithValue("rb1", "hello");
-                //cmdUpdate.Parameters.AddWithValue("rb2", "*");
-                Console.WriteLine("signal 1");
-                Console.WriteLine("SQL executed. {0} lines affected.", cmdUpdate.ExecuteNonQuery()); 
-                Console.WriteLine("signal 2");
+                cmdUpdate.Parameters.AddWithValue("rb1", "CITIZEN");
+                cmdUpdate.Parameters.AddWithValue("rb2", "CITIZIN");
+                cmdUpdate.Parameters.AddWithValue("rb3", ".CITIZEN");
+                cmdUpdate.Parameters.AddWithValue("rb4", "11/23/09"); //?
+                cmdUpdate.Parameters.AddWithValue("rb5", "CITICEN");
+                cmdUpdate.Parameters.AddWithValue("rb6", "CITEZEN");
+                Console.WriteLine("Executing SQL update for [REPORTED BY] ...");
+                Console.WriteLine("SQL executed. {0} lines affected.", cmdUpdate.ExecuteNonQuery());
+
+                // Fix [S/W]
+                query = "update [SIDEWALK & GUTTER REPAIR LIST] set [S/W]=@rb1 where StrComp([S/W],@rb2,0) = 0"; // Use StrComp for case sensitivity
+                query += "or StrComp([S/W],@rb3,0) = 0 or StrComp([S/W],@rb4,0) = 0";
+                query += " or [S/W]=@rb5";
+                cmdUpdate = new OleDbCommand(query, connection);
+                cmdUpdate.Parameters.Clear();
+                cmdUpdate.CommandType = CommandType.Text;
+                cmdUpdate.Parameters.AddWithValue("rb1", "X");
+                cmdUpdate.Parameters.AddWithValue("rb2", "x");
+                cmdUpdate.Parameters.AddWithValue("rb3", "XX");
+                cmdUpdate.Parameters.AddWithValue("rb4", "  X");
+                cmdUpdate.Parameters.AddWithValue("rb5", "S");
+
+                Console.WriteLine("Executing SQL update for [S/W] ...");
+                Console.WriteLine("SQL executed. {0} lines affected.", cmdUpdate.ExecuteNonQuery());
+
+                // Close the connection
                 connection.Close();
 
                 da.Fill(ds);
