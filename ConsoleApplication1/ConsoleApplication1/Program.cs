@@ -164,8 +164,9 @@ namespace ConsoleApplication1
 
                 string query = "";
                 OleDbCommand cmdUpdate;
-                // Fix [REPORTED BY]
+                Console.WriteLine(Environment.NewLine + "Attempting to patch typos in database..." + Environment.NewLine);
 
+                // Fix [REPORTED BY]
                 query = "update [SIDEWALK & GUTTER REPAIR LIST] set [REPORTED BY]=@rb1 where [REPORTED BY]=@rb2 or [REPORTED BY]=@rb3 or [REPORTED BY]=@rb4";
                 query += " or [REPORTED BY]=@rb5 or [REPORTED BY]=@rb6";
                 cmdUpdate = new OleDbCommand(query, connection);
@@ -179,6 +180,7 @@ namespace ConsoleApplication1
                 cmdUpdate.Parameters.AddWithValue("rb6", "CITEZEN");
                 Console.WriteLine("Executing SQL update for [REPORTED BY] ...");
                 Console.WriteLine("SQL executed. {0} lines affected.", cmdUpdate.ExecuteNonQuery());
+                Console.WriteLine();
 
                 // Fix [S/W]
                 query = "update [SIDEWALK & GUTTER REPAIR LIST] set [S/W]=@rb1 where StrComp([S/W],@rb2,0) = 0"; // Use StrComp for case sensitivity
@@ -192,9 +194,22 @@ namespace ConsoleApplication1
                 cmdUpdate.Parameters.AddWithValue("rb3", "XX");
                 cmdUpdate.Parameters.AddWithValue("rb4", "  X");
                 cmdUpdate.Parameters.AddWithValue("rb5", "S");
-
                 Console.WriteLine("Executing SQL update for [S/W] ...");
                 Console.WriteLine("SQL executed. {0} lines affected.", cmdUpdate.ExecuteNonQuery());
+                Console.WriteLine();
+
+                // Fix [C/G]
+                query = "update [SIDEWALK & GUTTER REPAIR LIST] set [C/G]=@rb1 where StrComp([C/G],@rb2,0) = 0"; // Use StrComp for case sensitivity
+                query += "or StrComp([C/G],@rb3,0) = 0";
+                cmdUpdate = new OleDbCommand(query, connection);
+                cmdUpdate.Parameters.Clear();
+                cmdUpdate.CommandType = CommandType.Text;
+                cmdUpdate.Parameters.AddWithValue("rb1", "X");
+                cmdUpdate.Parameters.AddWithValue("rb2", "x");
+                cmdUpdate.Parameters.AddWithValue("rb3", "5");
+                Console.WriteLine("Executing SQL update for [C/G] ...");
+                Console.WriteLine("SQL executed. {0} lines affected.", cmdUpdate.ExecuteNonQuery());
+                Console.WriteLine();
 
                 // Close the connection
                 connection.Close();
@@ -221,10 +236,10 @@ namespace ConsoleApplication1
                         for (int j=0; j < table.Columns.Count; j++)
                         {
                             addValueToHash(hash, table.Columns[j].ColumnName, row[j].ToString());
-                            appendToFile(outfile1, table.Columns[j].ColumnName + " : " + row[j].ToString());
-                            appendToFile(outfile1, Environment.NewLine);
+                            //appendToFile(outfile1, table.Columns[j].ColumnName + " : " + row[j].ToString());
+                            //appendToFile(outfile1, Environment.NewLine);
                         }
-                        appendToFile(outfile1, Environment.NewLine);
+                        //appendToFile(outfile1, Environment.NewLine);
                     }
                 }
 
