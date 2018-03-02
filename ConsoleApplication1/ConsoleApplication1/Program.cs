@@ -127,6 +127,7 @@ namespace ConsoleApplication1
             string configFilePath = @"./config.txt";
             getPathsFromConfig(configFilePath, ref basePath, ref accessDBPath);
 
+            string outputDBPath = basePath + "OUTPUT.accdb";
             string outputXMLPath = basePath + @"test.xml";
             string outfile1 = basePath + @"tableDump.txt";
             string outfile2 = basePath + @"hashDump.txt";
@@ -134,14 +135,19 @@ namespace ConsoleApplication1
 
             Console.WriteLine("basePath: " + basePath);
             Console.WriteLine("accessDBPath: " + accessDBPath);
+            Console.WriteLine("outputDBPath: " + outputDBPath);
             Console.WriteLine("outputXMLPath: " + outputXMLPath);
             Console.WriteLine("outfile1: " + outfile1);
             Console.WriteLine("outfile2: " + outfile2);
 
+            // Create a detabase that is a copy of the original to be used for updates,
+            // that way the original remains unmodified. Overwrite if it already exists
+            System.IO.File.Copy(accessDBPath, outputDBPath, true);
+
             OleDbConnection connection = new OleDbConnection();
 
             connection.ConnectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;"
-                + @"Data Source=" + accessDBPath + ";";
+                + @"Data Source=" + outputDBPath + ";";
 
             try
             {
@@ -154,6 +160,20 @@ namespace ConsoleApplication1
                 Console.WriteLine("SQL Query set.");
                 OleDbDataAdapter da = new OleDbDataAdapter(cmd);
                 Console.WriteLine("SQL Query passed.");
+
+                // Test sql update
+                
+                string query = "update [SIDEWALK & GUTTER REPAIR LIST] set [REPORTED BY]=@rb1";
+                OleDbCommand cmdUpdate = new OleDbCommand(query, connection);
+                //cmdUpdate.Parameters.Clear();
+                cmdUpdate.CommandType = CommandType.Text;
+                cmdUpdate.Parameters.AddWithValue("rb1", "hello");
+                //cmdUpdate.Parameters.AddWithValue("rb2", "*");
+                Console.WriteLine("signal 1");
+                Console.WriteLine("SQL executed. {0} lines affected.", cmdUpdate.ExecuteNonQuery()); 
+                Console.WriteLine("signal 2");
+                connection.Close();
+
                 da.Fill(ds);
                 Console.WriteLine("Dataset populated.");
 
@@ -184,6 +204,7 @@ namespace ConsoleApplication1
                 }
 
                 dumpHashTable(hash, outfile2);
+                
                 Console.WriteLine("Successfully completed processing. Press any key to exit.");
             }
             catch (Exception)
