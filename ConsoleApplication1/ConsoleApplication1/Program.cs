@@ -27,6 +27,8 @@ namespace ConsoleApplication1
                     DictionaryEntry de = hashVal[i];
                     if (de.Key.ToString() == value)
                     {
+                        // We found a key/value pair that is the same as a key/value pair we found previously,
+                        // so update the frequency count for this key/value pair
                         de.Value = (int)de.Value + 1;
                         hashVal[i] = de;
                         return;
@@ -57,7 +59,6 @@ namespace ConsoleApplication1
         // Print the contents of the hash table
         private static void dumpHashTable(Hashtable hash, string outputfile)
         {
-
             Console.WriteLine("Beginning dumpHashTable.");
             foreach (DictionaryEntry de in hash)
             {
@@ -123,15 +124,14 @@ namespace ConsoleApplication1
         {
             string basePath = "";
             string accessDBPath = "";
-
             string configFilePath = @"./config.txt";
+
             getPathsFromConfig(configFilePath, ref basePath, ref accessDBPath);
 
             string outputDBPath = basePath + "OUTPUT.accdb";
             string outputXMLPath = basePath + @"test.xml";
             string outfile1 = basePath + @"tableDump.txt";
             string outfile2 = basePath + @"hashDump.txt";
-
 
             Console.WriteLine("basePath: " + basePath);
             Console.WriteLine("accessDBPath: " + accessDBPath);
@@ -162,7 +162,6 @@ namespace ConsoleApplication1
                 Console.WriteLine("SQL Query passed.");
 
                 // Test sql update
-                
                 string query = "update [SIDEWALK & GUTTER REPAIR LIST] set [REPORTED BY]=@rb1";
                 OleDbCommand cmdUpdate = new OleDbCommand(query, connection);
                 //cmdUpdate.Parameters.Clear();
@@ -204,7 +203,6 @@ namespace ConsoleApplication1
                 }
 
                 dumpHashTable(hash, outfile2);
-                
                 Console.WriteLine("Successfully completed processing. Press any key to exit.");
             }
             catch (Exception)
